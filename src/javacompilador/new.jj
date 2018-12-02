@@ -151,14 +151,14 @@ TOKEN : /* OPERATORS */
   | < INCR: "++" > { System.out.println("Operador de Incremento: " + image); } 
   | < DECR: "--" > { System.out.println("Operador de Decremento: " + image); } 
   | < PLUS: "+" > { System.out.println("Operador de Soma: " + image); } 
-  | < MINUS: "-" > { System.out.println("Operador de Subtração: " + image); } 
-  | < STAR: "*" > { System.out.println("Operador de Multiplicação: " + image); } 
-  | < SLASH: "/" > { System.out.println("Operador de Divisão: " + image); } 
+  | < MINUS: "-" > { System.out.println("Operador de Subtracao: " + image); } 
+  | < STAR: "*" > { System.out.println("Operador de Multiplicacao: " + image); } 
+  | < SLASH: "/" > { System.out.println("Operador de Divisao: " + image); } 
   | < REM: "%" > { System.out.println("Operador de Modulo: " + image); } 
   | < PLUSASSIGN: "+=" > { System.out.println("Operador de Mais Igual: " + image); } 
   | < MINUSASSIGN: "-=" > { System.out.println("Operador de Menos Igual: " + image); } 
   | < STARASSIGN: "*=" > { System.out.println("Operador de Vezes Igual: " + image); } 
-  | < SLASHASSIGN: "/=" > { System.out.println("Operador de Divisão Igual: " + image); } 
+  | < SLASHASSIGN: "/=" > { System.out.println("Operador de Divisao Igual: " + image); } 
   | < REMASSIGN: "%=" > { System.out.println("Operador de Modulo Igual: " + image); } 
 }
 
@@ -201,15 +201,15 @@ void ConstructorDeclaration():{}{ <IDENTIFICADOR> "("  ")" StatementBlock() }
 void ParameterList():{}{ Parameter() ("," Parameter())* }
 void Parameter():{}{ Type() <IDENTIFICADOR> }
 void StatementBlock():{}{ "{" (Statement())* "}" | "{" "}"}
-void Statement():{}{ InternalVariableDeclaration() | "return" [Expression()] ";" | IfStatement() | PrintStatement() | WhileStatement() | Expression() ";" }
-void InternalVariableDeclaration():{}{ Type() <IDENTIFICADOR> VariableDeclaratorLine() ("," VariableDeclaratorLine())* ";" }
-void VariableDeclaratorLine():{}{[ "=" Expression() ]}
-void Expression():{}{ (<IDENTIFICADOR>(MethodCall() | TestingExpression() | NumericExpression())) | "(" Expression() ")" | LiteralExpression() }
-void NumericExpression():{}{ [FullExpression()] }
+void Statement():{}{ LOOKAHEAD(2) MethodCall() | InternalVariableDeclaration() | "return" [Expression()] ";" | IfStatement() | PrintStatement() | WhileStatement() | Expression() ";"}
+void InternalVariableDeclaration():{}{ Type() <IDENTIFICADOR> VariableDeclaratorLine() ("," VariableDeclaratorLine())* }
+void VariableDeclaratorLine():{}{[ "=" (MethodCall() | Expression())]}
+void Expression():{}{ "(" Expression() ")" | ((<IDENTIFICADOR> | LiteralExpression())(TestingExpression() | NumericExpression())) | LiteralExpression() }
+void NumericExpression():{}{ [FullExpression()] | "(" Expression() ")"}
 void FullExpression():{}{ ("+" | "+=" | "-" | "-=" | "*" | "*=" | "/" | "/=" | "%" | "%=") Expression() }
-void MethodCall():{}{ "(" ParameterCallList() ")" }
+void MethodCall():{}{ <IDENTIFICADOR> "(" ParameterCallList() ")" ";"}
 void ParameterCallList():{}{ Expression() ("," Expression())*}
-void LiteralExpression():{}{ <INTEGER_LITERAL>}
+void LiteralExpression():{}{ <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> | <CHARACTER_LITERAL> | <STRING_LITERAL>}
 void TestingExpression():{}{ (">" | "<" | ">=" | "==" | "!=") Expression() }
 void IfStatement():{}{ "if" "(" Expression() ")" StatementBlock() [ "else" StatementBlock() ]}
 void PrintStatement():{}{ <PRINT> "(" Expression() ")" ";"}
