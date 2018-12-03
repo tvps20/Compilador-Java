@@ -204,9 +204,16 @@ void StatementBlock():{}{ "{" (Statement())* "}" | "{" "}"}
 void Statement():{}{ LOOKAHEAD(2) MethodCall() | InternalVariableDeclaration() | "return" [Expression()] ";" | IfStatement() | PrintStatement() | WhileStatement() | Expression() ";"}
 void InternalVariableDeclaration():{}{ Type() <IDENTIFICADOR> VariableDeclaratorLine() ("," VariableDeclaratorLine())* }
 void VariableDeclaratorLine():{}{[ "=" (MethodCall() | Expression())]}
-void Expression():{}{ "(" Expression() ")" | ((<IDENTIFICADOR> | LiteralExpression())(TestingExpression() | NumericExpression())) | LiteralExpression() }
-void NumericExpression():{}{ [FullExpression()] | "(" Expression() ")"}
-void FullExpression():{}{ ("+" | "+=" | "-" | "-=" | "*" | "*=" | "/" | "/=" | "%" | "%=") Expression() }
+
+void Expression():{}{ LOOKAHEAD(2) Termo() ("+" | "+=" | "-" | "-=" | "*" | "*=" | "/" | "/=" | "%" | "%=") Expression() | Termo() }
+void Termo():{}{ Valor() | Valor() (">" | "<" | ">=" | "==" | "!=") Expression()}
+void Valor():{}{ <IDENTIFICADOR> | LiteralExpression() | "(" Expression() ")" }
+
+//void Expression():{}{ "(" Expression() ")" | ((<IDENTIFICADOR> | LiteralExpression())(TestingExpression() | NumericExpression())) | LiteralExpression() }
+//void NumericExpression():{}{ [FullExpression()] | "(" Expression() ")"}
+//void FullExpression():{}{ ("+" | "+=" | "-" | "-=" | "*" | "*=" | "/" | "/=" | "%" | "%=") Expression() }
+
+
 void MethodCall():{}{ <IDENTIFICADOR> "(" ParameterCallList() ")" ";"}
 void ParameterCallList():{}{ Expression() ("," Expression())*}
 void LiteralExpression():{}{ <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> | <CHARACTER_LITERAL> | <STRING_LITERAL>}
