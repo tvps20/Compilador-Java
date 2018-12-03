@@ -1,0 +1,242 @@
+options{
+    STATIC = false;
+    DEBUG_LOOKAHEAD = false;
+}
+
+PARSER_BEGIN(Scanner_1)
+package compilador;
+import java.io.*;
+import java.util.*;
+import javax.swing.JOptionPane;
+
+public class Scanner_1{
+
+    boolean Menosshort = false; //Saida resumida falso
+    public void processa() throws Exception {
+        Token t = new Token ();
+
+        do {
+
+            t = getNextToken(); //Obtém o próximo token
+            String nomeToken = tokenImage[t.kind]; //guarda o nome do token na string
+
+        } while(t.kind!=0); //condicao de parada: final do arquivo (constante eof 0 )
+    }
+
+        public static void main(String args[], String x) throws ParseException, FileNotFoundException {
+
+            try {
+
+            }catch (Error e){
+                System.out.println(e.getMessage()); //Mensagem de erro léxico (em ingles) mostrando linha e coluna
+            }
+
+        }
+}
+
+PARSER_END(Scanner_1)
+
+/* ESPECIFICAÇÃO DO ANALIZADOR LÉXICO */
+TOKEN_MGR_DECLS: {
+    int countLexError = 0;
+    public int foundLexError() {
+        return countLexError;
+    }
+}
+
+SKIP : // TOKENS IGNORADOS
+{
+     " "
+   | "\r" 
+   | "\t" 
+   | "\n"
+   | <COMENTARIO: "//" (<COM>)*>
+   | <COMENTARIOS: "/*" ("\n" | "\r" | <COM>)* "*/" >
+   | <#COM: ( ~["\"","\\","\n","\r"] | "\\" ( ["n","t","b","r","f","\\","\'","\""] | ( ["\n","\r"] | "\r\n")))*>
+}
+
+
+TOKEN : //PALAVRAS RESERVADAS
+{
+      <INICIO: "inicio"> { System.out.println("Palavra Reservada: " + image); }
+    | <INT: "int"> { System.out.println("Tipo int: " + image); }
+    | <FLOAT: "float" > { System.out.println("Tipo Float: " + image); }
+    | <BOOLEAN: "boolean"> { System.out.println("Tipo Boolean: " + image); }
+    | <CHAR: "char" > { System.out.println("Tipo Char: " + image); }
+    | <STRING: "String" > { System.out.println("Tipo String: " + image); }
+    | <NULL: "null" >  { System.out.println("Palavra Reservada: " + image); }
+    | <IMPORT: "import" > { System.out.println("Palavra Reservada: " + image); }
+    | <PACKAGE: "package"> { System.out.println("Palavra Reservada: " + image); }
+    | <CLASS: "class" >  { System.out.println("Palavra Reservada: " + image); }
+    | <MAIN: "main" >  { System.out.println("Palavra Reservada: " + image); }
+    | <ARGS: "args" >  { System.out.println("Palavra Reservada: " + image); }
+    | <VOID: "void" >  { System.out.println("Tipo Void: " + image); }
+    | <RETURN: "return" >  { System.out.println("Palavra Reservada: " + image); }
+    | <STATIC: "static" >  { System.out.println("Palavra Reservada: " + image); }
+    | <PRIVATE: "private" >  { System.out.println("Palavra Reservada: " + image); }
+    | <PUBLIC: "public" >  { System.out.println("Palavra Reservada: " + image); }
+    | <IF: "if" >  { System.out.println("Palavra Reservada: " + image); }
+    | <ELSE: "else" >  { System.out.println("Palavra Reservada: " + image); }
+    | <TRUE: "true" >  { System.out.println("Palavra Reservada: " + image); }
+    | <FALSE: "false" >  { System.out.println("Palavra Reservada: " + image); }
+    | <PRINT: "System.out.println" >  { System.out.println("Palavra Reservada: " + image); }
+    | <WHILE: "while" >  { System.out.println("Palavra Reservada: " + image); }  
+}
+
+TOKEN : /* LITERALS */
+{
+      < INTEGER_LITERAL:
+        <DECIMAL_LITERAL> (["l","L"])?
+      > { System.out.println("Literal Decimal: " + image); }
+    | < #DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* >
+    | < FLOATING_POINT_LITERAL: (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])?
+        | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])?
+        | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
+        | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]
+      > { System.out.println("Literal Ponto Flutuante: " + image); }
+    | < #EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+    | < CHARACTER_LITERAL:
+      "'"
+      (   (~["'","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )
+      "'"
+      > { System.out.println("Literal Char: " + image); }
+    | < STRING_LITERAL:
+      "\""
+      (   (~["\"","\\","\n","\r"])
+        | ("\\"
+            ( ["n","t","b","r","f","\\","'","\""]
+            | ["0"-"7"] ( ["0"-"7"] )?
+            | ["0"-"3"] ["0"-"7"] ["0"-"7"]
+            )
+          )
+      )*
+      "\""
+      > { System.out.println("Literal String: " + image); }
+}
+
+TOKEN: // SEPARADORES
+{
+      <AP: "("> { System.out.println("Abre Parentese: " + image); } 
+    | <FP: ")"> { System.out.println("Fecha Parentese: " + image); }
+    | <AC: "{"> { System.out.println("Abre Chaves: " + image); }
+    | <FC: "}"> { System.out.println("Fecha Chaves: " + image); }
+    | <AB: "["> { System.out.println("Abre Cochetes: " + image); }
+    | <FB: "]"> { System.out.println("Fecha Cochetes: " + image); }
+    | <SEMICOLON: ";"> { System.out.println("Ponto e Virgula: " + image); }
+    | <COMMA: ","> { System.out.println("Virgula: " + image); }
+    | <DOT: "."> { System.out.println("Ponto: " + image); }
+    | <DOTSTART: ".*"> { System.out.println("Ponto e Asterisco: " + image); }
+}
+
+TOKEN : /* OPERATORS */
+{
+    < ASSIGN: "=" > { System.out.println("Operador de Atribuicao: " + image); }  
+  | < GT: ">" > { System.out.println("Operador de Maior: " + image); } 
+  | < LT: "<" > { System.out.println("Operador de Menor: " + image); } 
+  | < BANG: "!" > { System.out.println("Operador de Negação: " + image); } 
+  | < COLON: ":" > { System.out.println("Operador de Dois Pontos: " + image); } 
+  | < EQ: "==" > { System.out.println("Operador de Igualdade: " + image); } 
+  | < LE: "<=" > { System.out.println("Operador de Menor Igual: " + image); } 
+  | < GE: ">=" > { System.out.println("Operador de Maior Igual: " + image); } 
+  | < NE: "!=" > { System.out.println("Operador de Diferente: " + image); } 
+  | < SC_OR: "||" > { System.out.println("Operador Ou: " + image); } 
+  | < SC_AND: "&&" > { System.out.println("Operador E: " + image); } 
+  | < INCR: "++" > { System.out.println("Operador de Incremento: " + image); } 
+  | < DECR: "--" > { System.out.println("Operador de Decremento: " + image); } 
+  | < PLUS: "+" > { System.out.println("Operador de Soma: " + image); } 
+  | < MINUS: "-" > { System.out.println("Operador de Subtracao: " + image); } 
+  | < STAR: "*" > { System.out.println("Operador de Multiplicacao: " + image); } 
+  | < SLASH: "/" > { System.out.println("Operador de Divisao: " + image); } 
+  | < REM: "%" > { System.out.println("Operador de Modulo: " + image); } 
+  | < PLUSASSIGN: "+=" > { System.out.println("Operador de Mais Igual: " + image); } 
+  | < MINUSASSIGN: "-=" > { System.out.println("Operador de Menos Igual: " + image); } 
+  | < STARASSIGN: "*=" > { System.out.println("Operador de Vezes Igual: " + image); } 
+  | < SLASHASSIGN: "/=" > { System.out.println("Operador de Divisao Igual: " + image); } 
+  | < REMASSIGN: "%=" > { System.out.println("Operador de Modulo Igual: " + image); } 
+}
+
+TOKEN: // IDENTIFICADORES
+{
+    <IDENTIFICADOR: <LETTER>(<LETTER>|<DIGIT>)*(["$"])?> { System.out.println("Identificador: " + image); } 
+    | <#LETTER: (["a"-"z","A"-"Z"])>
+    | <#DIGIT: ["0"-"9"]>
+}
+
+SPECIAL_TOKEN: {
+    <INVALIDO_LEXICO: (~["(", ")", "{", "}", " ", "\t" ,"\n" ,"\r" ,"\f"])+> {
+        countLexError++;
+        System.err.println("Linha " + input_stream.getEndLine() + " Coluna " + input_stream.getEndColumn() + 
+        " Caractere invalido encontrado: " + image + " " + "TOTAL ERRO " + countLexError);
+        System.out.println("Error Lexico -----> " + image);
+    }
+}
+
+/*****************************************
+ *       THE JAVA LANGUAGE GRAMMAR       *
+ *****************************************/
+
+/*
+ * Program structuring syntax follows.
+ */
+
+void INIT():{}{programa()}
+
+
+void programa():{}{ [PackageDeclaration()] ClassDeclaration() }
+void PackageDeclaration():{}{ "package" <IDENTIFICADOR> ";" }
+//void Import():{}{<IMPORT>(( <IDENTIFICADOR> "." <IDENTIFICADOR> ) | <IDENTIFICADOR>) ";" }
+void ClassDeclaration():{}{ Modifier() <CLASS> <IDENTIFICADOR> "{" FieldDeclaration() "}" }
+void FieldDeclaration():{}{( Modifier() (("static" Type() (((<IDENTIFICADOR>(VariableDeclarator() | MethodDeclaration()))) |  Main())) | ConstructorDeclaration()))* }
+void VariableDeclarator():{}{ ";" | (("," <IDENTIFICADOR>)* ";")} 
+void MethodDeclaration():{}{"(" [ParameterList()] ")" StatementBlock() }
+void Main():{}{"main" "(" "String" "[" "]" "args" ")" StatementBlock()}
+void ConstructorDeclaration():{}{ <IDENTIFICADOR> "("  ")" StatementBlock() }
+void ParameterList():{}{ Parameter() ("," Parameter())* }
+void Parameter():{}{ Type() <IDENTIFICADOR> }
+void StatementBlock():{}{ "{" (Statement())* "}" | "{" "}"}
+void Statement():{}{ LOOKAHEAD(2) MethodCall() | InternalVariableDeclaration() | "return" [Expression()] ";" | IfStatement() | PrintStatement() | WhileStatement() | Expression() ";"}
+void InternalVariableDeclaration():{}{ Type() <IDENTIFICADOR> VariableDeclaratorLine() ("," VariableDeclaratorLine())* }
+void VariableDeclaratorLine():{}{[ "=" (MethodCall() | Expression())]}
+void Expression():{}{ "(" Expression() ")" | ((<IDENTIFICADOR> | LiteralExpression())(TestingExpression() | NumericExpression())) | LiteralExpression() }
+void NumericExpression():{}{ [FullExpression()] | "(" Expression() ")"}
+void FullExpression():{}{ ("+" | "+=" | "-" | "-=" | "*" | "*=" | "/" | "/=" | "%" | "%=") Expression() }
+void MethodCall():{}{ <IDENTIFICADOR> "(" ParameterCallList() ")" ";"}
+void ParameterCallList():{}{ Expression() ("," Expression())*}
+void LiteralExpression():{}{ <INTEGER_LITERAL> | <FLOATING_POINT_LITERAL> | <CHARACTER_LITERAL> | <STRING_LITERAL>}
+void TestingExpression():{}{ (">" | "<" | ">=" | "==" | "!=") Expression() }
+void IfStatement():{}{ "if" "(" Expression() ")" StatementBlock() [ "else" StatementBlock() ]}
+void PrintStatement():{}{ <PRINT> "(" Expression() ")" ";"}
+void WhileStatement():{}{ "while" "(" Expression() ")" StatementBlock()}
+
+void Modifier():{}{ "public" | "private" }
+void Type():{}{ "boolean" | "char" | "int" | "float" | "void" }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
