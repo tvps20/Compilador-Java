@@ -204,7 +204,7 @@ void StatementBlock():{}{ "{" (Statement())* "}" | "{" "}"}
 void Statement():{}{ LOOKAHEAD(2) MethodCall() | InternalVariableDeclaration() | "return" [Expression()] ";" | IfStatement() | PrintStatement() | WhileStatement() | Expression() ";"}
 void InternalVariableDeclaration():{}{ Type() <IDENTIFICADOR> VariableDeclaratorLine() ("," VariableDeclaratorLine())* }
 void VariableDeclaratorLine():{}{[ "=" (MethodCall() | Expression())]}
-void Expression():{}{ "(" Expression() ")" | ((<IDENTIFICADOR> | LiteralExpression())(TestingExpression() | NumericExpression())) | LiteralExpression() }
+void Expression():{}{((<IDENTIFICADOR> | LiteralExpression())(TestingExpression() | NumericExpression())) | LiteralExpression() | "(" Expression() ")" }
 void NumericExpression():{}{ [FullExpression()] | "(" Expression() ")"}
 void FullExpression():{}{ ("+" | "+=" | "-" | "-=" | "*" | "*=" | "/" | "/=" | "%" | "%=") Expression() }
 void MethodCall():{}{ <IDENTIFICADOR> "(" ParameterCallList() ")" ";"}
